@@ -1,0 +1,165 @@
+import React, { useState, useEffect } from 'react';
+import {
+	StyleSheet,
+	Text,
+	View,
+	TouchableOpacity,
+    TextInput,
+    Image
+} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import {firebase} from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore';
+import {Button,Icon} from 'native-base'
+
+export default CompanyLogin =({navigation})=>{
+    //..
+    const [email,setEmail]=useState('')
+    const [password,setPassword]=useState('')
+    const [errortext, setErrortext] = useState("");
+
+       
+    async function LoginUser(){
+        setErrortext("");
+      if (!email) {
+        alert("Please fill Email");
+        return;
+      }
+      if (!password) {
+        alert("Please fill Password");
+        return;
+      }
+        await firebase
+        
+        .auth()
+        .signInWithEmailAndPassword(email.trim(),password)
+        .then((Company)=>{
+            alert('WELCOME')
+             if (Company) navigation.navigate("Companydata");
+            
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.code === "auth/invalid-email")
+              setErrortext(error.message);
+            else if (error.code === "auth/user-not-found")
+              setErrortext("No User Found");
+            else {
+              setErrortext(
+                "Please check your email id or password"
+              );
+            }
+          });
+        
+
+    }
+
+
+    return(
+        
+        <View style={styles.container}>
+           <View style={{ alignItems: "center" }}>
+            </View>
+            <View style={{
+                padding:10,
+                
+            }}>
+            </View>
+            
+
+            <View style={styles.forms}>
+                <TextInput
+                placeholder={'Email'}
+                inlineImageLeft={"account"}
+                keyboardType="default"
+                //..
+                onChangeText={(text)=>setEmail(text)}
+                value={email}
+                style={styles.textinput}>
+
+                </TextInput>
+
+                <TextInput
+                placeholder={'Password'}
+                secureTextEntry
+                inlineImageLeft={"account"}
+                keyboardType="default"
+                // ...
+                onChangeText={(text)=>setPassword(text)}
+                value={password}
+
+                style={styles.textinput}>
+                </TextInput>
+            </View>
+
+            {/* //.. */}
+            <View>
+            {errortext != "" ? (
+              <Text style={styles.errorTextStyle}>
+                {" "}
+                {errortext}{" "}
+              </Text>
+              ) : null}
+            </View>
+
+           <Button 
+           onPress={()=>LoginUser()}
+           style={{
+               borderRadius:20,
+               padding:50,
+               marginTop:10,
+               justifyContent:'center',
+               backgroundColor:'#ff9579'
+           }}>
+               <Text style={{
+                   textAlign:'center',
+                   color:'white',
+                   fontSize:25,
+                  
+               }}>
+                   SIGN IN
+               </Text>
+
+           </Button>
+           <Text style={{
+                   
+                   
+                   fontSize:25}}>Don't have account?
+           <  Text
+                onPress={()=>navigation.navigate('CompanyRegister')}
+                style={styles.login}>
+                <Text style={styles.textstyle}> Sign Up </Text>
+                </Text>
+                </Text>
+        </View>
+
+    )
+}
+
+const styles =StyleSheet.create({
+    container:{
+        padding:20,
+        marginVertical:110,
+        marginTop:100,
+    },
+    forms:{
+        flexDirection:'column',
+        marginTop:-30,
+    },
+    textinput:{
+            fontSize:20,
+            fontWeight:'300',
+            borderColor:'#ff9579',
+            borderWidth:3,
+            borderRadius:15,
+            padding:10,
+            marginTop:10,
+    },
+    login: {
+      fontWeight:'bold',
+      color:'#FFA500',
+    },
+      textstyle:{
+        color:'#ff9579'
+      },
+})
